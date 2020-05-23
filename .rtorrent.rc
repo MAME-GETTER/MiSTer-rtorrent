@@ -8,6 +8,7 @@
 
 
 ## Instance layout (base paths)
+## MiSTer users change only the first line below ""/media/fat/rtorrent/" to where you want to keep you rtorrent working directories
 method.insert = cfg.basedir,  private|const|string, (cat,"/media/fat/rtorrent/")
 method.insert = cfg.download, private|const|string, (cat,(cfg.basedir),"download/")
 method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
