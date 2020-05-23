@@ -1,39 +1,30 @@
-# Location where to download temporary files
- directory = $RTORRENPATH/rtorrent_Download_Files
+#############################################################################
+# A minimal rTorrent configuration that provides the basic features
+# you want to have in addition to the built-in defaults.
+#
+# See https://github.com/rakshasa/rtorrent/wiki/CONFIG-Template
+# for an up-to-date version.
+#############################################################################
 
-# Folder to save & resume rtorrent sessions
- session = $RTORRENPATH/rtorrent_session
 
-# Other Settings
- upload_rate = 30
- download_rate = 200
- peer_exchange = yes
+## Instance layout (base paths)
+method.insert = cfg.basedir,  private|const|string, (cat,"/media/fat/rtorrent/")
+method.insert = cfg.download, private|const|string, (cat,(cfg.basedir),"download/")
+method.insert = cfg.logs,     private|const|string, (cat,(cfg.basedir),"log/")
+method.insert = cfg.logfile,  private|const|string, (cat,(cfg.logs),"rtorrent-",(system.time),".log")
+method.insert = cfg.session,  private|const|string, (cat,(cfg.basedir),".session/")
+method.insert = cfg.watch,    private|const|string, (cat,(cfg.basedir),"watch/")
 
-# DHT options
- dht = auto
 
-# custom throttles settings
- throttle_up = low,10
- throttle_down = low,10
- throttle_up = med,20
- throttle_down = med,20
+## Create instance directories
+execute.throw = sh, -c, (cat,\
+    "mkdir -p \"",(cfg.download),"\" ",\
+    "\"",(cfg.logs),"\" ",\
+    "\"",(cfg.session),"\" ",\
+    "\"",(cfg.watch),"/load\" ",\
+    "\"",(cfg.watch),"/start\" ")
 
-# rtorrent_Watch is a folder for new torrents
- schedule = watch_directory,0,10,load_start=$RTORRENPATH/rtorrent_Watch/*.torrent
- schedule = tied_directory,10,10,start_tied=
- schedule = untied_directory,10,10,close_untied=
 
-# Enable the default ratio group
- ratio.enable=
-
-# Modify the limits, the defaults is optimal.
- ratio.min.set=50
- ratio.max.set=150
- ratio.upload.set=20M
-
-# Modify the command triggered when the ratio is reached.
- system.method.set = group.seeding.ratio.command, d.close=, d.erase=
-
-# Transfer the finished torrents to rtorrent_FullDownload_Files folder
- system.method.set_key = event.download.finished,rm_torrent,"execute=rm,$d.get_tied_to_file="
- system.method.set_key = event.download.finished,move_complete,"execute=mv,-u,$d.get_base_path=,$RTORRENPATH/rtorrent_FullDownload_Files/ ;d.set_directory=$RTORRENPATH/rtorrent_FullDownload_Files/"
+## Listening port for incoming peer traffic (fixed; you can also randomize it)
+network.port_range.set = 50000-50000
+network.port_random.set = no
